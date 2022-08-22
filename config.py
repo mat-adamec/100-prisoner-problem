@@ -99,17 +99,11 @@ class Config:
             ''' Helper function that standardizes a key in dict_ to the type_ specified. '''
             dict_[key] = type_(dict_[key])
         
-        # If nPrisoners is odd, we need lower. Since flooring is a tighter constraint on the simulation, we default to it.
-        if (self._reqs['nPrisoners'] % 2) == 1:
-            warnings.warn('The number of prisoners is odd, so opening half of the envelopes is ambiguous. \
-                        Defaulting to rounding down (\'lower\'=True) since this is the tighter constraint on the simulation. \
-                        If you would prefer to round up, specify \'lower\'=False in the config.', stacklevel=2)
-            self._opts['lower'] = True
         # Make sure lower is properly specified. It should be a Boolean.
         if 'lower' not in self._opts.keys():
             # Give a warning if lower isn't specified with an odd-numbered simulation.
             if (self._reqs['nPrisoners'] % 2) == 1:
-                warnings.warn('The number of prisoners is odd, so opening half of the envelopes is ambiguous. \
+                warnings.warn('The number of envelopes is odd, so opening half of the envelopes is ambiguous. \
                             Defaulting to rounding down (\'lower\'=True) since this is the tighter constraint on the simulation. \
                             If you would prefer to round up, specify \'lower\'=False in the config.', stacklevel=2)
                 self._opts['lower'] = True

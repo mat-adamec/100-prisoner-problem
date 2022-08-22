@@ -35,6 +35,7 @@ class AttemptSchema():
         return self._round(nEnvelopes/2, lower)
         
     def _modified(self, nEnvelopes, param, lower=True):
+        print('here')
         return self._round(nEnvelopes/param, lower)
                    
                    
@@ -83,7 +84,7 @@ class RandomSelect(Algorithm):
             guess = random.choice(range(len(unchecked)))
             check = unchecked[guess]
             # Remove the index from the unchecked list since it's now been checked. We don't care about preserving indices when we're making a random choice.
-            unchecked = np.append(unchecked[:guess], unchecked[-guess:])
+            unchecked = np.append(unchecked[:guess], unchecked[-(len(unchecked)-1-guess):])
             if prisoner == check:
                 success = True
         return success
@@ -106,7 +107,7 @@ class LoopSelect(Algorithm):
             check = unchecked[guess]
             if prisoner == check:
                # If prisoner still has attempts, success!
-               if attempts > 0:
+               if attempts >= 0:
                     success = True
                # Otherwise, get out of the loop!
                else:

@@ -1,5 +1,6 @@
 import warnings
 from collections import defaultdict
+import time
 
 import pandas as pd
 import numpy as np
@@ -22,7 +23,8 @@ class Trial:
         self._envelopes = np.arange(0, kwargs.pop('nEnvelopes'))
 
         # Randomize envelope indices. Prisoners don't need to be randomized.
-        np.random.shuffle(self._envelopes)
+        rng = np.random.default_rng()
+        rng.shuffle(self._envelopes)
 
     @property
     def result(self):
@@ -164,11 +166,17 @@ class Simulation():
         fewer or one extra attempt for the prisoners (as prisoners should get half the amount of prisoners in attempts on selecting the envelopes).
 
         Output: A pandas dataframe containing data and extra of every trial with all algorithms, organized as results[algorithm][data] or results[algorithm][extra]. '''
-        
+        t = {'chunk': time.time(), 'total': time.time()}
         for i in range(self._config['nTrials']):
             # This just handles the progress updates.
-            if (self._config['chunks'] != None) & ((i % int(self._config['nTrials']/self._config['chunks'])) == 0):
-                print('Progress: Currently on trial ' + str(i))
+            if (i != 0) & (self._config['chunks'] != None) & ((i % int(self._config['nTrials']/self._config['chunks'])) == 0):
+                # Calculate some time statistics.
+                if 'avg' in locals():
+                    avg = np.mean([avg, time.time()-t['chunk']])
+                else:
+                    avg = time.time() - t['chunk']
+                print('Progress: Currently on trial ' + str(i) + '. This chunk took ' + str(time.time() - t['chunk']) + ' seconds to complete. Estimating ' + str(avg*(self._config['nTrials'] - i)/(self._config['nTrials']/self._config['chunks'])) + ' more seconds.')
+                t['chunk'] = time.time()
             # Now, for each trial, initialize an object of the Trial class with parameters provided by the config. We can use the config's opts for kwargs, but remove chunks.
             trial_opts = self._config._opts.copy()
             trial_opts.pop('chunks')
@@ -183,5 +191,5 @@ class Simulation():
                     for key in self._results[algorithm.__name__]['extra']:
                         self._results[algorithm.__name__]['extra'][key] = pd.concat([self._results[algorithm.__name__]['extra'][key], pd.Series(trial._result[algorithm.__name__]['extra'][key], name='Trial ' + str(i))], axis=1)
         if self._config['chunks'] != None:
-            print('Concluded: Finished trial ' + str(i) + ' and stored in .results!')
+            print('Concluded: Finished trial ' + str(i) + ' and stored in .results! Took a total of ' + str(time.time() - t['total']))
         self.stats
