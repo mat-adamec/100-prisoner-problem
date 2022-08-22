@@ -1,5 +1,4 @@
 # The Hundred Prisoner Problem
-# The Hundred Prisoner Problem
 ## Problem Statement
 The hundred prisoner problem is a mathematical problem that seeks the optimal solution to the following riddle: 100 prisoners are indexed by numbers which are placed it to 100 envelopes, not necessarily (and indeed, not typically!) in the same order. Each prisoner independently goes in and selects 50 envelopes. If all prisoners find their own number, then all prisoners are freed.
 
